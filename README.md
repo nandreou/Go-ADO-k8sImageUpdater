@@ -10,3 +10,5 @@ This is a tool which runs in AzureDevOps Pipelines. Pushes an image to AzureCont
 5. Go to your CI/CD (e.g Argo) check that it tracked the change.
 6. See your new Image to be deployed in the cluster. Happy Deploying !!!
 
+# PS
+You do not want to use azure pipelines, just get the script code and use how ever you want
