@@ -1,0 +1,93 @@
+trigger: none
+
+pool: DevOps VMSS Agents
+
+parameters:
+  - name: "imageTag"
+    displayName: "Image Tag"
+    type: string
+
+variables:
+  #GO Variables
+  GOBIN:  '$(GOPATH)/bin'
+  GOROOT: '/usr/local/go1.11'
+  GOPATH: '$(system.defaultWorkingDirectory)/gopath'
+  modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)'
+
+  # ACR Pipeline Variables
+  acr: acrmsadevweu2azc.azurecr.io
+  imageRepository: "nginx"
+  containerRegistry: "SVC_CONNECTION"
+
+  # Branch Pipeline Variables
+  branchToPush: main
+  
+  # Directorie Pipeline Variables
+  k8sFileDir: "$(Build.SourcesDirectory)/k8s"
+  k8sFilePath: "$(Build.SourcesDirectory)/k8s/testDeployment.yaml"
+  scriptFileDir: "$(Build.SourcesDirectory)/SetK8sImageScriptFiles"
+  dockerfilePath: "$(Build.SourcesDirectory)/app/Dockerfile"
+
+
+stages:
+  - stage: TestOpenYaml
+    displayName: TestOpenYaml
+    jobs:
+    - job: Build_and_push
+      displayName: Build and push
+      steps:
+      # - task: CopyFiles@2
+      #   displayName: 'Copy shared files to src'
+      #   inputs:
+      #     SourceFolder:  "$(Build.SourcesDirectory)/cosmosDB"  
+      #     Contents: '**' 
+      #     TargetFolder: "$(Build.SourcesDirectory)/ADO/src/cosmosDB"
+      # - task: Docker@2
+      #   displayName: Build and push image
+      #   inputs:
+      #     command: buildAndPush
+      #     repository: $(imageRepository)
+      #     dockerfile: $(dockerfilePath)
+      #     containerRegistry: $(containerRegistry)
+      #     tags: |
+      #       ${{ parameters.imageTag }}
+
+      - task: GoTool@0
+        displayName: 'Use Go'
+        inputs:
+          version: '1.22.3'
+
+      - task: Go@0
+        displayName: 'go build'
+        inputs:
+          workingDirectory: '$(scriptFileDir)'
+          command: build
+          arguments: '-o $(Build.BinariesDirectory)/main'
+      
+      - task: Bash@3
+        name: 'ExecuteGoScript'
+        displayName: 'Execute GO Script'
+        inputs:
+          targetType: 'inline'
+          script: |
+            $(Build.BinariesDirectory)/main -file $(k8sFilePath) -image "$(acr)/$(imageRepository):${{ parameters.imageTag }}" 
+
+      - task: Bash@3
+        name: 'PushYamlToRepo'
+        displayName: 'PushYamlToRepo'
+        inputs:
+          workingDirectory: '$(k8sFileDir)'
+          targetType: 'inline'
+          script: |
+            echo "Configuring Git..."
+            git config --global user.email "nikolaos.p.andreou@accenture.com"
+            git config --global user.name "nikolaos.p.andreou"
+
+            echo "Adding files to Git..."
+            git add .
+
+            git commit -m "Automated commit to k8s $(imageRepository) .yaml from Azure DevOps pipeline"
+
+            echo "Pushing changes to repository..."
+            git push https://$(pat)$(echo $(Build.Repository.Uri) | sed 's/^https:\/\/ppcsa//') HEAD:$(branchToPush)
+        
