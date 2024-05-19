@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	if *image == "" || *yamlFile == "" {
-		log.Fatal("Both -image and -file -pat arguments are required")
+		log.Fatal("Both -image and -file arguments are required")
 	}
 
 	/************* Read Yaml File *************/
