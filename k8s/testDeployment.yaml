@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: 'acrmsadevweu2azc.azurecr.io/nginx:v0.0.1'
+        image: '<ACR URI>/nginx:v0.0.1'
         resources:
           requests:
             memory: "256Mi"
