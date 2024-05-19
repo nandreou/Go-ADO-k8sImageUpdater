@@ -1,20 +1,13 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+    This is a tool which runs in AzureDevOps Pipelines. Pushes an image to AzureContainerRegistry and then updates the k8s files in order your CI/CD (e.g. Argo) deploy the new app image. 
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+    1. Go to azure DevOps Create Pipeline using the .yml in Folder /Pipelines/deployPipeline.yml (Or what ever Folder you put the pipeline file into).
+    
+    2. Edit the Pipeline according to the paths that your files exist.
+    3. Generate PAT key in order for the pipeline has the credentials to push to repository.
+    3. Run Pipeline.
+    4. Check that everything was updated correctly.
+    5. Go to your CI/CD (e.g Argo) check that it tracked the change.
+    6. See your new Image to be deployed in the cluster and be Happy !!!
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
-
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)

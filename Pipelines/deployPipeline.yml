@@ -1,6 +1,6 @@
 trigger: none
 
-pool: DevOps VMSS Agents
+pool: ubuntu-latest
 
 parameters:
   - name: "imageTag"
@@ -10,14 +10,14 @@ parameters:
 variables:
   #GO Variables
   GOBIN:  '$(GOPATH)/bin'
-  GOROOT: '/usr/local/go1.11'
+  GOROOT: '/usr/local/go1.22.3'
   GOPATH: '$(system.defaultWorkingDirectory)/gopath'
   modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)'
 
   # ACR Pipeline Variables
-  acr: acrmsadevweu2azc.azurecr.io
-  imageRepository: "nginx"
-  containerRegistry: "SVC_CONNECTION"
+  acr: <YOUR ACR URI>
+  imageRepository: "nginx" #YOUR IMAGE NAME IN ACR REPO
+  containerRegistry: "SVC_CONNECTION" #DOCKER SERVICE CONNECTION FOR PUSH
 
   # Branch Pipeline Variables
   branchToPush: main
@@ -36,21 +36,15 @@ stages:
     - job: Build_and_push
       displayName: Build and push
       steps:
-      # - task: CopyFiles@2
-      #   displayName: 'Copy shared files to src'
-      #   inputs:
-      #     SourceFolder:  "$(Build.SourcesDirectory)/cosmosDB"  
-      #     Contents: '**' 
-      #     TargetFolder: "$(Build.SourcesDirectory)/ADO/src/cosmosDB"
-      # - task: Docker@2
-      #   displayName: Build and push image
-      #   inputs:
-      #     command: buildAndPush
-      #     repository: $(imageRepository)
-      #     dockerfile: $(dockerfilePath)
-      #     containerRegistry: $(containerRegistry)
-      #     tags: |
-      #       ${{ parameters.imageTag }}
+      - task: Docker@2
+        displayName: Build and push image
+        inputs:
+          command: buildAndPush
+          repository: $(imageRepository)
+          dockerfile: $(dockerfilePath)
+          containerRegistry: $(containerRegistry)
+          tags: |
+            ${{ parameters.imageTag }}
 
       - task: GoTool@0
         displayName: 'Use Go'
@@ -80,8 +74,8 @@ stages:
           targetType: 'inline'
           script: |
             echo "Configuring Git..."
-            git config --global user.email "nikolaos.p.andreou@accenture.com"
-            git config --global user.name "nikolaos.p.andreou"
+            git config --global user.email "<YOUR EMAIL>"
+            git config --global user.name "YOUR NAME"
 
             echo "Adding files to Git..."
             git add .
