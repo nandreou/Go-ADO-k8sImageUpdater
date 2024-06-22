@@ -11,4 +11,4 @@ This is a tool which runs in AzureDevOps Pipelines. Pushes an image to AzureCont
 6. See your new Image to be deployed in the cluster. Happy Deploying !!!
 
 # PS
-You do not want to use azure pipelines. Just get the script code and use it how ever you want
+In case You do not want to use azure pipelines. Just get the script code and use it how ever you want
